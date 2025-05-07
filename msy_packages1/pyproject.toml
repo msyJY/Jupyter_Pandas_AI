@@ -1,0 +1,6 @@
+[project]
+name = "my_eb_package"
+version = "0.0.1"
+
+[project.entry-points."jupyter_ai.embeddings_model_providers"]
+my-provider = "my_eb_provider:MyEmbProvider"
