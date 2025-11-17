@@ -1,7 +1,3 @@
-"""
-author:msy
-实现 Jupyter-ai 调用本地部署的 embedding 服务。
-"""
 from typing import Any, Dict, List, Optional, Union
 from jupyter_ai_magics import BaseEmbeddingsProvider
 import requests

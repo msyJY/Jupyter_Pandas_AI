@@ -1,20 +1,23 @@
-from typing import Any, Dict, Iterator, List, Mapping, Optional, TYPE_CHECKING, cast, Union
-
-from jupyter_ai import AiExtension, _jupyter_server_extension_points
-from langchain_core.callbacks.manager import CallbackManagerForLLMRun
-import json
+from typing import Any, Dict, List, Optional, AsyncIterator
 from jupyter_ai_magics import BaseProvider
-from openai import OpenAI
+from langchain_core.callbacks.manager import (
+    CallbackManagerForLLMRun,
+    AsyncCallbackManagerForLLMRun
+)
 from langchain.chat_models.base import BaseChatModel
+from langchain_core.messages import (
+    BaseMessage,
+    AIMessage,
+    AIMessageChunk,
+    SystemMessage,
+    HumanMessage
+)
+from langchain_core.outputs import ChatGeneration, ChatResult, ChatGenerationChunk
+from openai import OpenAI, AsyncOpenAI
+import json
 
-from langchain_core.messages import BaseMessage, AIMessage, AIMessageChunk
-from langchain_core.outputs import ChatGeneration, LLMResult, ChatResult
 
-
-# 接收 jupyter-lab 界面聊天框内容信息
 class ChatLLM(BaseChatModel):
-    # print('进入serverLLM中了————————————————————————————')
-
     def _generate(
             self,
             messages: List[BaseMessage],
@@ -22,64 +25,91 @@ class ChatLLM(BaseChatModel):
             run_manager: Optional[CallbackManagerForLLMRun] = None,
             **kwargs: Any,
     ) -> ChatResult:
-        # print("进入_generate模块*************")
-        # print("messages*************", messages)
-        last_message = messages[-1]
-        # print("last_message*************", last_message)
-        msg = last_message.content[:]
-        # print("最终传入信息为：_______", msg)
+        print("*********已进入 generate 函数中********")
+        # msg = messages[-1].content
+        # 构建历史记录
+        conversation = [
+            {"role": "system", "content": "你是一个可以辅助代码也可以聊天的通用机器人"}
+        ]
+        for msg in messages:
+            if isinstance(msg, HumanMessage):
+                conversation.append({"role": "user", "content": msg.content})
+            elif isinstance(msg, AIMessage):
+                conversation.append({"role": "assistant", "content": msg.content})
+        print("conversation长度**********", len(conversation))
+
         result = ''
-        if self.model_id == "deepseek-r1:7b":
-            #print('输入数据为：', msg)
+
+        if self.model_id in self.models:
             client = OpenAI(
                 base_url='http://localhost:11434/v1',
                 api_key="not-needed",
             )
-            # print('实例化客户端---------')
             completion = client.chat.completions.create(
                 model=self.model_id,
-                messages=[
-                    {"role": "system", "content": "你是一个可以辅助代码也可以聊天的通用机器人"},
-                    {"role": "user", "content": msg}
-                ],
-                stream=False)
-            # print('实例化complition----------')
-            res = completion.model_dump_json(indent=2)
-            # print('加载成 json 格式', res)
-            result = json.loads(res)["choices"][0]["message"]["content"]
-            #print('AI 回答的结果是：___________', result)
-        message = AIMessageChunk(content=result)
-        # message = AIMessage(content=result)
-        # print("最终的message*************", message)
-        # generation = ChatGeneration(message=message)
-        generation = ChatGeneration(text=result, message=message)
-        # print("最终的会话生成为***********：", ChatResult(generations=[generation]))
-        return ChatResult(generations=[generation])
+                messages=conversation,
+                stream=False
+            )
+            result = completion.choices[0].message.content
+
+        return ChatResult(generations=[ChatGeneration(
+            message=AIMessage(content=result)
+        )])
+
+    async def _astream(
+            self,
+            messages: List[BaseMessage],
+            stop: Optional[List[str]] = None,
+            run_manager: Optional[AsyncCallbackManagerForLLMRun] = None,
+            **kwargs: Any,
+    ) -> AsyncIterator[ChatGenerationChunk]:
+        print("*********已进入 _astream 函数中********")
+        # msg = messages[-1].content
+        # 构建完整对话历史
+        conversation = [
+            {"role": "system", "content": "你是一个可以辅助代码也可以聊天的通用机器人"}
+        ]
+        for msg in messages:
+            if isinstance(msg, HumanMessage):
+                conversation.append({"role": "user", "content": msg.content})
+            elif isinstance(msg, AIMessage):
+                conversation.append({"role": "assistant", "content": msg.content})
+
+        print("conversation**********", conversation)
+
+        if self.model_id in self.models:
+            client = AsyncOpenAI(
+                base_url='http://localhost:11434/v1',
+                api_key="not-needed",
+            )
+            completion = await client.chat.completions.create(
+                model=self.model_id,
+                messages=conversation,
+                stream=True
+            )
+
+            async for chunk in completion:
+                if chunk.choices and chunk.choices[0].delta.content:
+                    yield ChatGenerationChunk(
+                        message=AIMessageChunk(content=chunk.choices[0].delta.content)
+                    )
 
     @property
     def _identifying_params(self) -> Dict[str, Any]:
-        """Return a dictionary of identifying parameters."""
-        return {"model_name": "deepseek-r1:7b", }
+        return {"model_name": self.model_id}
 
     @property
     def _llm_type(self) -> str:
-        return "deepseek-r1:7b"
+        return self.model_id
 
 
 class MyProvider(BaseProvider, ChatLLM):
-    # print('已进入类MyProvider中————————————----')
     id = "my_provider"
     name = "My Provider"
-    models = ["deepseek-r1:7b"]
+    models = ["deepseek-r1:7b", "qwen2-custom:latest"]
     model_id_key = "model"
 
-    # print('准备进行 init')
-
     def __init__(self, **kwargs):
-        kwarg_dict = kwargs
-        # print('打印变量接受 1', kwarg_dict.keys())
-        # print('打印变量接受 2', kwarg_dict.values())
         model_id = kwargs.get("model_id")
-        llm = ChatLLM(model_id=model_id)
-        # print("llm返回结果——————————————", llm)
-        super().__init__(**kwargs)
+        llm = ChatLLM(model_id=model_id, models=self.models)
+        super().__init__( **kwargs)

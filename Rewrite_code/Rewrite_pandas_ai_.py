@@ -1,6 +1,6 @@
 """
 author：msy
-功能：重写pandasai处理逻辑，新增对于 Deepseek 返回包含思维链的数据结果进行处理，以及对 Pandas-ai 中部分功能模板英文改成中文回答
+功能：重写pandasai的clarification_questions_prompt.py文件，增加对Deepseek类似有 think 模块返回数据的支持
 """
 from pandasai.prompts.clarification_questions_prompt import ClarificationQuestionPrompt
 import re, json
@@ -9,6 +9,8 @@ from pandasai import Agent
 from pandasai.prompts.base import BasePrompt
 from pandasai.exceptions import InvalidLLMOutputType
 from jinja2 import FileSystemLoader, Environment
+from pandasai.llm.local_llm import LocalLLM
+from pandasai.helpers.memory import Memory
 
 # 添加本地模板路径到搜索路径
 template_loader = FileSystemLoader([
@@ -136,3 +138,5 @@ class RephraseQueryPrompt(BasePrompt):
     """Prompt to generate Python code from a dataframe."""
 
     template_path = template_env.get_template("rephrase_query.tmpl")
+
+

@@ -1,0 +1,12 @@
+[build-system]
+requires = ["hatchling>=1.4.0", "jupyterlab~=4.0", "hatch-nodejs-version"]
+build-backend = "hatchling.build"
+
+# 新增
+[project]
+name = "jupyter_ai_chat_rewrite"
+version = "1.0.0"
+description = "Jupyter AI Chat extension"
+authors = [
+    {name = "MSY", email = "1234567890@email.com"}
+]

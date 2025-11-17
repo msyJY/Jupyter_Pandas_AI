@@ -1,7 +1,3 @@
-"""
-author:msy
-实现封装pandasai功能的魔法命令详细逻辑
-"""
 from IPython.core.magic import Magics, magics_class, cell_magic, line_magic
 from IPython.core.magic_arguments import argument, magic_arguments, parse_argstring
 from pandas import DataFrame
