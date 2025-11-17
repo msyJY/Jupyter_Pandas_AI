@@ -1,18 +1,18 @@
 # Jupyter_Pandas_AI
 
-<img src="/Users/gedun/github_testcode/Jupyter_Pandas_AI/Jupyter_Pandas_AI/pic/image-20251117160732144.png" alt="image-20251117160732144" style="zoom:25%;" />
+<img src="./pic/image-20251117160732144.png" alt="image-20251117160732144" style="zoom:25%;" />
 
-<img src="/Users/gedun/github_testcode/Jupyter_Pandas_AI/Jupyter_Pandas_AI/pic/image-20251117160926490.png" alt="image-20251117160926490" style="zoom:25%;" />
+<img src="./pic/image-20251117160926490.png" alt="image-20251117160926490" style="zoom:25%;" />
 
-<img src="/Users/gedun/github_testcode/Jupyter_Pandas_AI/Jupyter_Pandas_AI/pic/image-20251117114532233.png" alt="image-20251117114532233" style="zoom:25%;" />
+<img src="./pic/image-20251117114532233.png" alt="image-20251117114532233" style="zoom:25%;" />
 
-<img src="/Users/gedun/github_testcode/Jupyter_Pandas_AI/Jupyter_Pandas_AI/pic/image-20251117114425539.png" alt="image-20251117114425539" style="zoom:25%;" />
+<img src="./pic/image-20251117114425539.png" alt="image-20251117114425539" style="zoom:25%;" />
 
-<img src="/Users/gedun/github_testcode/Jupyter_Pandas_AI/Jupyter_Pandas_AI/pic/image-20251117160540640.png" alt="image-20251117160540640" style="zoom:25%;" />
+<img src="./pic/image-20251117160540640.png" alt="image-20251117160540640" style="zoom:25%;" />
 
-<img src="/Users/gedun/github_testcode/Jupyter_Pandas_AI/Jupyter_Pandas_AI/pic/image-20251117161606747.png" alt="image-20251117161606747" style="zoom:25%;" />
+<img src="./pic/image-20251117161606747.png" alt="image-20251117161606747" style="zoom:25%;" />
 
-<img src="/Users/gedun/github_testcode/Jupyter_Pandas_AI/Jupyter_Pandas_AI/pic/image-20251117161218252.png" alt="image-20251117161218252" style="zoom:25%;" />
+<img src="./pic/image-20251117161218252.png" alt="image-20251117161218252" style="zoom:25%;" />
 
 ## Jupyter_AI  个人优化适配(20251117)部分主要包含：
 1. Chat：Language Model 和 Embedding Model 适配调用本地模型服务且只显示本地模型
